@@ -1,10 +1,32 @@
+const { QUERY_TYPE } = require('../parsers/sql-parser');
+
 class DataBase {
-  constructor ({ tables }) {
+  constructor ({ tables, sqlParser }) {
     this.tables = tables;
+    this.sqlParser = sqlParser;
   }
 
   logTables () {
     this.tables.forEach(table => console.log(table.toString()));
+  }
+
+  query (sqlQuery) {
+    const queryType = this.sqlParser.getQueryType(sqlQuery);
+
+    let result = [];
+    switch (queryType) {
+      case QUERY_TYPE.SELECT:
+        const { columns, from, where } = this.sqlParser.parseSelect(sqlQuery);
+
+        if (columns && from) {
+          result = this.select(columns, from, where);
+        }
+        break;
+      default:
+        throw new Error(`Database doesn\'t support SQL query type ${queryData.type} in ${sqlQuery}`);
+    }
+
+    return result;
   }
 
   select (columns, from, where) {
@@ -21,7 +43,8 @@ class DataBase {
     }
 
     const tableToQuery = this.tables.find(table => table.getName() === from);
-    tableToQuery.select(columns, where);
+
+    return tableToQuery.select(columns, where);
   }
 }
 

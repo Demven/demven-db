@@ -1,10 +1,12 @@
 const fs = require('fs');
 const { promisify } = require('util');
 const { TableParser } = require('./parsers/table-parser');
+const { SQLParser } = require('./parsers/sql-parser');
 const { DataBase } = require('./models/database');
 
 const readFile = promisify(fs.readFile);
 const dataFiles = fs.readdirSync(`${__dirname}/data/`);
+const sqlParser = new SQLParser();
 
 function parseTable (fileName) {
   const tableName = fileName.replace('.gdb', '');
@@ -15,7 +17,7 @@ function parseTable (fileName) {
 function buildDataBase () {
   return Promise
     .all(dataFiles.map(parseTable))
-    .then(tables => new DataBase({ tables }))
+    .then(tables => new DataBase({ tables, sqlParser }))
     .catch(console.error);
 }
 
@@ -25,7 +27,9 @@ async function startDataBase () {
   console.info('Database started. Tables:');
   dataBase.logTables();
 
-  dataBase.select(['id', 'name', 'done'], 'tasks', { 'done': false })
+  // const selectResult = dataBase.select(['id', 'name', 'done'], 'tasks', { 'done': false });
+  const queryResult = dataBase.query('select * from tasks where name = "Fix the car";');
+  console.info('queryResult', queryResult);
 }
 
 startDataBase();

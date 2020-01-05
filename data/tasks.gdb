@@ -8,4 +8,3 @@ ____VALUES____
 3;Clean the apartment;true
 4;Read the book;true
 5;Run in the park;false
-

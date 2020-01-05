@@ -31,14 +31,20 @@ class Table {
       });
     });
 
+    const needToReturnAllColumns = columns[0] === '*';
+
     // Select only required columns
-    const indexesForSelectedColumns = columns
-      .map(selectedColumnName => this.columns.findIndex(columnName => columnName === selectedColumnName));
-    const queryResult = matchingRows.map(row => row.getProjectedValues(indexesForSelectedColumns, this.dataTypes));
+    let indexesForSelectedColumns = [];
+    if (needToReturnAllColumns) {
+      indexesForSelectedColumns = new Array(this.columns.length)
+        .fill(0)
+        .map((currentColumnIndex, index) => index);
+    } else {
+      indexesForSelectedColumns = columns
+        .map(selectedColumnName => this.columns.findIndex(columnName => columnName === selectedColumnName));
+    }
 
-    console.info(`select ${columns} from table ${this.name} where ${where}`);
-
-    console.info('queryResult', queryResult);
+   return matchingRows.map(row => row.getProjectedValues(indexesForSelectedColumns, this.dataTypes));
   }
 
   getName() {
