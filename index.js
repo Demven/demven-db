@@ -9,8 +9,10 @@ const readFile = promisify(fs.readFile);
 const dataFiles = fs.readdirSync(`${__dirname}/data/`);
 const sqlParser = new SQLParser();
 
+const TABLE_FORMAT = '.ddb';
+
 function parseTable (fileName) {
-  const tableName = fileName.replace('.gdb', '');
+  const tableName = fileName.replace(TABLE_FORMAT, '');
   return readFile(`${__dirname}/data/${fileName}`, { encoding: 'utf-8' })
     .then(tableData => new TableParser(tableName).parse(tableData));
 }
