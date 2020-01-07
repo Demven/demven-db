@@ -23,7 +23,7 @@ class DataBase {
         }
         break;
       default:
-        throw new Error(`Database doesn\'t support SQL query type ${queryData.type} in ${sqlQuery}`);
+        throw new Error(`Database doesn\'t support SQL query type "${queryType.toUpperCase()}" in ${sqlQuery}`);
     }
 
     return result;
